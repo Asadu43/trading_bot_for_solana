@@ -1,8 +1,20 @@
 require("dotenv").config();
+const ccxt = require("ccxt");
 
 const apiUrl = `https://api.coingecko.com/api/v3/coins/solana/market_chart?vs_currency=usd&interval=daily&days=7&x_cg_demo_api_key=${process.env.COIN_GECOKO_API_KEY}`;
 
 const apiUrlPrice = `https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd&x_cg_demo_api_key=${process.env.COIN_GECOKO_API_KEY}`;
+
+
+const exchange = new ccxt.binance({
+    apiKey: process.env.BINANCE_API_KEY,
+    secret: process.env.BINANCE_API_SECRET
+});
+
+const symbol = "SOL/USD";
+const type = "limit";
+const side = "buy";
+const amount = 1;
 
 const run = async () => {
     let res, resJson;
@@ -55,11 +67,18 @@ const run = async () => {
             }
         };
 
+        const order = exchange.createOrder(symbol, type, side, amount, limitPrice, params);
+        console.log(`Buy Order Created. ${amount} ${symbol}  - Limit @  ${limitPrice} - Take profit @ ${params.takeProfit}  Stop Loss @ ${params.stopLoss}`);
+        console.log(order);
+
+
+
     }
 
 
 
+
 }
+const init = setInterval(run, 86400 * 1000)
 
-
-run();
+init();
