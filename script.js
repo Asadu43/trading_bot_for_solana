@@ -8,8 +8,19 @@ const apiUrlPrice = `https://api.coingecko.com/api/v3/simple/price?ids=solana&vs
 
 const exchange = new ccxt.binance({
     apiKey: process.env.BINANCE_API_KEY,
-    secret: process.env.BINANCE_API_SECRET
+    secret: process.env.BINANCE_API_SECRET,
+    options: {
+        defaultType: 'spot',
+        adjustForTimeDifference: true
+    },
+    urls: {
+        api: {
+            public: 'https://testnet.binance.vision/api/v3',
+            private: 'https://testnet.binance.vision/api/v3',
+        }
+    }
 });
+
 
 const symbol = "SOL/USD";
 const type = "limit";
@@ -67,7 +78,7 @@ const run = async () => {
             }
         };
 
-        const order = exchange.createOrder(symbol, type, side, amount, limitPrice, params);
+        const order = await exchange.createOrder(symbol, type, side, amount, limitPrice, params);
         console.log(`Buy Order Created. ${amount} ${symbol}  - Limit @  ${limitPrice} - Take profit @ ${params.takeProfit}  Stop Loss @ ${params.stopLoss}`);
         console.log(order);
 
@@ -79,6 +90,6 @@ const run = async () => {
 
 
 }
-const init = setInterval(run, 86400 * 1000)
 
-init();
+run();
+// setInterval(run, 86400 * 1000)
